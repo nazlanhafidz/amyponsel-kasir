@@ -36,24 +36,12 @@ export default function App() {
 
   const categories = ['Semua', 'Rokok', 'Kebutuhan Sehari-hari', 'Minuman', 'Makanan'];
 
-  // 1. Load data produk dari Supabase saat aplikasi dibuka & set up Realtime Listener
+  // Load data produk dari Supabase saat aplikasi dibuka
   useEffect(() => {
     fetchProducts();
-
-    // Listener Realtime Supabase
-    const subscription = supabase
-      .channel('public:products')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
-        fetchProducts();
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(subscription);
-    };
   }, []);
 
-  // Fungsi memuat data dari database Supabase
+  // Fungsi memuat data dari database Supabase secara langsung
   const fetchProducts = async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -62,14 +50,14 @@ export default function App() {
       .order('id', { ascending: true });
 
     if (error) {
-      console.error('Error fetching products:', error.message);
+      console.error('Gagal memuat produk dari Supabase:', error.message);
     } else {
       setProducts(data || []);
     }
     setLoading(false);
   };
 
-  // 2. Simpan atau Update Produk ke Supabase
+  // Simpan atau Update Produk langsung ke Supabase
   const handleSaveProduct = async (e) => {
     e.preventDefault();
     if (!productName || !productPrice || !productStock) {
@@ -80,7 +68,7 @@ export default function App() {
     const finalImage = productImage.trim() || 'https://images.unsplash.com/photo-1583258292688-d0213dc5a3a8?w=500&q=80';
 
     if (isEditing) {
-      // Update produk yang sudah ada
+      // Update produk
       const { error } = await supabase
         .from('products')
         .update({
@@ -93,11 +81,11 @@ export default function App() {
         .eq('id', editId);
 
       if (error) {
-        alert('Gagal update produk: ' + error.message);
+        alert('Gagal update produk ke database: ' + error.message);
       } else {
-        alert('Produk berhasil diperbarui!');
+        alert('Produk berhasil diperbarui di Supabase!');
         resetForm();
-        fetchProducts();
+        await fetchProducts();
       }
     } else {
       // Tambah produk baru
@@ -112,11 +100,11 @@ export default function App() {
         }]);
 
       if (error) {
-        alert('Gagal menyimpan produk: ' + error.message);
+        alert('Gagal menyimpan ke Supabase: ' + error.message);
       } else {
-        alert('Produk baru berhasil disimpan!');
+        alert('Produk baru berhasil disimpan ke Supabase!');
         resetForm();
-        fetchProducts();
+        await fetchProducts();
       }
     }
   };
@@ -131,7 +119,7 @@ export default function App() {
     setProductImage('');
   };
 
-  // 3. Edit & Hapus Produk
+  // Edit & Hapus Produk
   const handleEditClick = (product) => {
     setIsEditing(true);
     setEditId(product.id);
@@ -144,7 +132,7 @@ export default function App() {
   };
 
   const handleDeleteProduct = async (id) => {
-    if (window.confirm('Yakin ingin menghapus produk ini?')) {
+    if (window.confirm('Yakin ingin menghapus produk ini dari database?')) {
       const { error } = await supabase
         .from('products')
         .delete()
@@ -153,12 +141,12 @@ export default function App() {
       if (error) {
         alert('Gagal menghapus produk: ' + error.message);
       } else {
-        fetchProducts();
+        await fetchProducts();
       }
     }
   };
 
-  // 4. Logika Keranjang Belanja & Transaksi POS
+  // Logika Keranjang & Transaksi
   const addToCart = (product) => {
     if (product.stock <= 0) {
       alert('Stok produk habis!');
@@ -201,11 +189,9 @@ export default function App() {
 
   const cartTotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
-  // Process Transaksi & Update Stok ke Supabase
   const handleCheckout = async () => {
     if (cart.length === 0) return;
 
-    // Reduce stok di Supabase
     for (const item of cart) {
       const newStock = item.stock - item.qty;
       await supabase
@@ -214,7 +200,6 @@ export default function App() {
         .eq('id', item.id);
     }
 
-    // Set invoice transaksi
     setCompletedOrder({
       id: 'TRX-' + Math.floor(100000 + Math.random() * 900000),
       date: new Date().toLocaleString('id-ID'),
@@ -226,10 +211,9 @@ export default function App() {
 
     setCart([]);
     setCustomerName('');
-    fetchProducts();
+    await fetchProducts();
   };
 
-  // Filter Produk
   const filteredProducts = products.filter((p) => {
     const matchCategory = selectedCategory === 'Semua' || p.category === selectedCategory;
     const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -238,7 +222,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 font-sans">
-      {/* Header Navigasi */}
       <header className="bg-slate-900 text-white sticky top-0 z-30 shadow-md">
         <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
           <div className="flex items-center gap-3">
@@ -288,14 +271,10 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto p-4 sm:p-6">
-        {/* TAB 1: KASIR (POS) */}
         {activeTab === 'pos' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Kolom Daftar Produk */}
             <div className="lg:col-span-2 space-y-4">
-              {/* Search & Kategori */}
               <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
                 <div className="relative">
                   <Search className="absolute left-3 top-3 w-5 h-5 text-slate-400" />
@@ -325,14 +304,13 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Grid Produk */}
               {loading ? (
                 <div className="flex justify-center items-center py-20 text-slate-500 gap-2">
-                  <RefreshCw className="w-6 h-6 animate-spin" /> Memuat data Supabase...
+                  <RefreshCw className="w-6 h-6 animate-spin" /> Memuat data dari Supabase...
                 </div>
               ) : filteredProducts.length === 0 ? (
                 <div className="bg-white p-12 rounded-2xl text-center border border-slate-200 text-slate-400">
-                  Tidak ada produk ditemukan.
+                  Tidak ada produk ditemukan di database.
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -367,7 +345,6 @@ export default function App() {
               )}
             </div>
 
-            {/* Kolom Keranjang Belanja */}
             <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm h-fit flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-center pb-3 mb-3 border-b border-slate-100">
@@ -379,7 +356,6 @@ export default function App() {
                   </span>
                 </div>
 
-                {/* Form Nama & Tipe Pesanan */}
                 <div className="space-y-3 mb-4">
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase">Nama Pembeli</label>
@@ -417,7 +393,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Item Keranjang */}
                 {cart.length === 0 ? (
                   <div className="py-12 text-center text-slate-400 text-sm">
                     <ShoppingCart className="w-10 h-10 mx-auto mb-2 opacity-30" />
@@ -460,7 +435,6 @@ export default function App() {
                 )}
               </div>
 
-              {/* Total & Tombol Bayar */}
               <div className="pt-4 border-t border-slate-100 mt-4 space-y-3">
                 <div className="flex justify-between items-center text-xs text-slate-500">
                   <span>Subtotal</span>
@@ -485,7 +459,6 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 2: KELOLA & TAMBAH PRODUK */}
         {activeTab === 'add-product' && (
           <div className="max-w-2xl mx-auto bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
             <div className="flex justify-between items-center border-b border-slate-100 pb-4">
@@ -495,7 +468,7 @@ export default function App() {
                   {isEditing ? 'Edit Produk Warung' : 'Tambah Produk Baru ke Supabase'}
                 </h2>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Input detail barang di bawah ini untuk tersinkron otomatis ke cloud.
+                  Input detail barang di bawah ini untuk tersimpan langsung ke cloud database.
                 </p>
               </div>
               {isEditing && (
@@ -579,9 +552,16 @@ export default function App() {
               </button>
             </form>
 
-            {/* Tabel Daftar Produk di Database */}
             <div className="pt-6 border-t border-slate-100">
-              <h3 className="font-bold text-sm text-slate-800 mb-3">Daftar Produk di Database ({products.length})</h3>
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="font-bold text-sm text-slate-800">Daftar Produk di Database ({products.length})</h3>
+                <button 
+                  onClick={fetchProducts}
+                  className="text-xs text-red-600 font-bold flex items-center gap-1 hover:underline"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" /> Refresh Data
+                </button>
+              </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-slate-50 text-slate-500 uppercase">
@@ -623,7 +603,6 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 3: KITCHEN / DAPUR */}
         {activeTab === 'kitchen' && (
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-center py-16">
             <ChefHat className="w-12 h-12 text-slate-300 mx-auto mb-3" />
@@ -634,7 +613,6 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 4: ADMIN DASHBOARD */}
         {activeTab === 'dashboard' && (
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
             <h2 className="font-bold text-lg text-slate-800">Ringkasan Ringkas Warung</h2>
@@ -660,7 +638,6 @@ export default function App() {
         )}
       </main>
 
-      {/* MODAL STRUK / NOTA PENJUALAN */}
       {completedOrder && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 space-y-4">
