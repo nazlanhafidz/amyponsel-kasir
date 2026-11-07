@@ -217,16 +217,16 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans">
-      {/* Header Application - Tema Biru Elegan */}
-      <header className="bg-blue-900 text-white sticky top-0 z-30 shadow-md">
+      {/* Header Application - Tema Oranye Shopee */}
+      <header className="bg-gradient-to-r from-orange-600 to-amber-600 text-white sticky top-0 z-30 shadow-md">
         <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="bg-blue-600 p-2 rounded-xl text-white shadow-inner">
+            <div className="bg-white/20 p-2 rounded-xl text-white backdrop-blur-sm">
               <Package className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="font-bold text-lg leading-tight tracking-wide text-blue-200">WARUNG AMYPONSEL</h1>
-              <p className="text-xs text-blue-300">Sistem POS Kasir & Stok Modern</p>
+              <h1 className="font-bold text-lg leading-tight tracking-wide text-white">WARUNG AMYPONSEL</h1>
+              <p className="text-xs text-orange-100">Sistem POS Kasir & Stok Modern</p>
             </div>
           </div>
 
@@ -234,7 +234,7 @@ export default function App() {
             <button
               onClick={() => setActiveTab('pos')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ${
-                activeTab === 'pos' ? 'bg-blue-600 text-white shadow' : 'hover:bg-blue-800 text-blue-200'
+                activeTab === 'pos' ? 'bg-white text-orange-600 shadow-sm' : 'hover:bg-white/10 text-white'
               }`}
             >
               <ShoppingCart className="w-4 h-4" /> Kasir (POS)
@@ -242,7 +242,7 @@ export default function App() {
             <button
               onClick={() => setActiveTab('add-product')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ${
-                activeTab === 'add-product' ? 'bg-blue-600 text-white shadow' : 'hover:bg-blue-800 text-blue-200'
+                activeTab === 'add-product' ? 'bg-white text-orange-600 shadow-sm' : 'hover:bg-white/10 text-white'
               }`}
             >
               <Plus className="w-4 h-4" /> Kelola & Tambah Produk
@@ -250,7 +250,7 @@ export default function App() {
             <button
               onClick={() => setActiveTab('kitchen')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ${
-                activeTab === 'kitchen' ? 'bg-blue-600 text-white shadow' : 'hover:bg-blue-800 text-blue-200'
+                activeTab === 'kitchen' ? 'bg-white text-orange-600 shadow-sm' : 'hover:bg-white/10 text-white'
               }`}
             >
               <ChefHat className="w-4 h-4" /> Kitchen / Dapur
@@ -258,7 +258,7 @@ export default function App() {
             <button
               onClick={() => setActiveTab('dashboard')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ${
-                activeTab === 'dashboard' ? 'bg-blue-600 text-white shadow' : 'hover:bg-blue-800 text-blue-200'
+                activeTab === 'dashboard' ? 'bg-white text-orange-600 shadow-sm' : 'hover:bg-white/10 text-white'
               }`}
             >
               <LayoutDashboard className="w-4 h-4" /> Admin Dashboard
@@ -281,7 +281,7 @@ export default function App() {
                     placeholder="Cari produk warung..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
                   />
                 </div>
 
@@ -292,7 +292,7 @@ export default function App() {
                       onClick={() => setSelectedCategory(cat)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
                         selectedCategory === cat
-                          ? 'bg-blue-600 text-white shadow-sm'
+                          ? 'bg-orange-600 text-white shadow-sm'
                           : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                       }`}
                     >
@@ -304,7 +304,7 @@ export default function App() {
 
               {loading ? (
                 <div className="flex justify-center items-center py-20 text-slate-500 gap-2">
-                  <RefreshCw className="w-6 h-6 animate-spin text-blue-600" /> Memuat data dari Supabase...
+                  <RefreshCw className="w-6 h-6 animate-spin text-orange-600" /> Memuat data dari Supabase...
                 </div>
               ) : filteredProducts.length === 0 ? (
                 <div className="bg-white p-12 rounded-2xl text-center border border-slate-200 text-slate-400">
@@ -329,11 +329,11 @@ export default function App() {
                         </span>
                       </div>
                       <div>
-                        <span className="text-[10px] font-semibold text-blue-600 uppercase tracking-wider">
+                        <span className="text-[10px] font-semibold text-orange-600 uppercase tracking-wider">
                           {product.category}
                         </span>
                         <h3 className="font-bold text-sm text-slate-800 line-clamp-1">{product.name}</h3>
-                        <p className="font-extrabold text-slate-900 text-sm mt-1">
+                        <p className="font-extrabold text-orange-600 text-sm mt-1">
                           Rp {Number(product.price).toLocaleString('id-ID')}
                         </p>
                       </div>
@@ -348,9 +348,9 @@ export default function App() {
               <div>
                 <div className="flex justify-between items-center pb-3 mb-3 border-b border-slate-100">
                   <h2 className="font-bold text-slate-800 flex items-center gap-2">
-                    <ShoppingCart className="w-5 h-5 text-blue-600" /> KERANJANG BELANJA
+                    <ShoppingCart className="w-5 h-5 text-orange-600" /> KERANJANG BELANJA
                   </h2>
-                  <span className="bg-blue-100 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                  <span className="bg-orange-100 text-orange-700 text-xs font-bold px-2.5 py-1 rounded-full">
                     {cart.reduce((a, c) => a + c.qty, 0)} Item
                   </span>
                 </div>
@@ -363,7 +363,7 @@ export default function App() {
                       placeholder="Contoh: Pak Joko"
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
-                      className="w-full mt-1 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full mt-1 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-orange-500"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
@@ -372,7 +372,7 @@ export default function App() {
                       onClick={() => setOrderType('Dine-In')}
                       className={`py-1.5 text-xs font-bold rounded-lg border transition ${
                         orderType === 'Dine-In'
-                          ? 'bg-blue-50 border-blue-500 text-blue-600'
+                          ? 'bg-orange-50 border-orange-500 text-orange-600'
                           : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                       }`}
                     >
@@ -383,7 +383,7 @@ export default function App() {
                       onClick={() => setOrderType('Takeaway')}
                       className={`py-1.5 text-xs font-bold rounded-lg border transition ${
                         orderType === 'Takeaway'
-                          ? 'bg-blue-50 border-blue-500 text-blue-600'
+                          ? 'bg-orange-50 border-orange-500 text-orange-600'
                           : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                       }`}
                     >
@@ -441,7 +441,7 @@ export default function App() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-slate-800">Total Bayar</span>
-                  <span className="font-black text-lg text-blue-600">
+                  <span className="font-black text-lg text-orange-600">
                     Rp {cartTotal.toLocaleString('id-ID')}
                   </span>
                 </div>
@@ -449,7 +449,7 @@ export default function App() {
                 <button
                   disabled={cart.length === 0}
                   onClick={handleCheckout}
-                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-bold py-3 rounded-xl transition shadow-md shadow-blue-200 flex items-center justify-center gap-2"
+                  className="w-full bg-orange-600 hover:bg-orange-700 disabled:bg-slate-300 text-white font-bold py-3 rounded-xl transition shadow-md shadow-orange-200 flex items-center justify-center gap-2"
                 >
                   PROSES TRANSAKSI & CETAK STRUK &rarr;
                 </button>
@@ -464,7 +464,7 @@ export default function App() {
             <div className="flex justify-between items-center border-b border-slate-100 pb-4">
               <div>
                 <h2 className="font-bold text-lg text-slate-800 flex items-center gap-2">
-                  <Plus className="w-5 h-5 text-blue-600" />
+                  <Plus className="w-5 h-5 text-orange-600" />
                   {isEditing ? 'Edit Produk Warung' : 'Tambah Produk Baru ke Supabase'}
                 </h2>
                 <p className="text-xs text-slate-500 mt-0.5">
@@ -489,7 +489,7 @@ export default function App() {
                   placeholder="Contoh: Aqua 600ml / Rokok Sampoerna"
                   value={productName}
                   onChange={(e) => setProductName(e.target.value)}
-                  className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                   required
                 />
               </div>
@@ -500,7 +500,7 @@ export default function App() {
                   <select
                     value={productCategory}
                     onChange={(e) => setProductCategory(e.target.value)}
-                    className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                   >
                     {categories.filter(c => c !== 'Semua').map(cat => (
                       <option key={cat} value={cat}>{cat}</option>
@@ -515,7 +515,7 @@ export default function App() {
                     placeholder="10000"
                     value={productPrice}
                     onChange={(e) => setProductPrice(e.target.value)}
-                    className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
                   />
                 </div>
@@ -527,7 +527,7 @@ export default function App() {
                     placeholder="50"
                     value={productStock}
                     onChange={(e) => setProductStock(e.target.value)}
-                    className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
                   />
                 </div>
@@ -540,13 +540,13 @@ export default function App() {
                   placeholder="https://images.unsplash.com/..."
                   value={productImage}
                   onChange={(e) => setProductImage(e.target.value)}
-                  className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-md shadow-blue-200"
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 rounded-xl transition shadow-md shadow-orange-200"
               >
                 {isEditing ? 'SIMPAN PERUBAHAN PRODUK' : 'SIMPAN PRODUK BARU KE SUPABASE'}
               </button>
@@ -557,7 +557,7 @@ export default function App() {
                 <h3 className="font-bold text-sm text-slate-800">Daftar Produk di Database ({products.length})</h3>
                 <button 
                   onClick={fetchProducts}
-                  className="text-xs text-blue-600 font-bold flex items-center gap-1 hover:underline"
+                  className="text-xs text-orange-600 font-bold flex items-center gap-1 hover:underline"
                 >
                   <RefreshCw className="w-3.5 h-3.5" /> Refresh Data
                 </button>
@@ -583,7 +583,7 @@ export default function App() {
                         <td className="p-2 text-right space-x-2">
                           <button
                             onClick={() => handleEditClick(p)}
-                            className="text-blue-600 hover:text-blue-800 font-semibold"
+                            className="text-orange-600 hover:text-orange-800 font-semibold"
                           >
                             <Edit3 className="w-4 h-4 inline" /> Edit
                           </button>
@@ -625,7 +625,7 @@ export default function App() {
               </div>
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
                 <p className="text-xs font-bold text-slate-400 uppercase">Stok Menipis (&lt; 10)</p>
-                <p className="text-2xl font-black text-blue-600 mt-1">
+                <p className="text-2xl font-black text-orange-600 mt-1">
                   {products.filter((p) => p.stock < 10).length}
                 </p>
               </div>
@@ -680,7 +680,7 @@ export default function App() {
 
             <div className="flex justify-between items-center text-sm">
               <span className="font-bold text-slate-800">TOTAL BAYAR</span>
-              <span className="font-black text-blue-600 text-base">
+              <span className="font-black text-orange-600 text-base">
                 Rp {completedOrder.total.toLocaleString('id-ID')}
               </span>
             </div>
@@ -694,7 +694,7 @@ export default function App() {
               </button>
               <button
                 onClick={() => setCompletedOrder(null)}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs"
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-2.5 rounded-xl text-xs"
               >
                 Tutup / Selesai
               </button>
