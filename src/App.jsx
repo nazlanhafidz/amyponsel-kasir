@@ -16,6 +16,7 @@ import { supabase } from './supabase';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('pos');
+  // State produk murni kosong dari awal, wajib narik dari Supabase
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('Semua');
@@ -36,12 +37,11 @@ export default function App() {
 
   const categories = ['Semua', 'Rokok', 'Kebutuhan Sehari-hari', 'Minuman', 'Makanan'];
 
-  // Load data produk dari Supabase saat aplikasi dibuka
+  // 1. Memuat produk langsung dari Supabase begitu halaman dibuka
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  // Fungsi memuat data dari database Supabase secara langsung
   const fetchProducts = async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -50,14 +50,15 @@ export default function App() {
       .order('id', { ascending: true });
 
     if (error) {
-      console.error('Gagal memuat produk dari Supabase:', error.message);
+      console.error('Error fetching products:', error.message);
+      alert('Gagal mengambil data dari Supabase: ' + error.message);
     } else {
       setProducts(data || []);
     }
     setLoading(false);
   };
 
-  // Simpan atau Update Produk langsung ke Supabase
+  // 2. SIMPAN / EDIT PRODUK KE SUPABASE (CRUD - Create & Update)
   const handleSaveProduct = async (e) => {
     e.preventDefault();
     if (!productName || !productPrice || !productStock) {
@@ -68,7 +69,7 @@ export default function App() {
     const finalImage = productImage.trim() || 'https://images.unsplash.com/photo-1583258292688-d0213dc5a3a8?w=500&q=80';
 
     if (isEditing) {
-      // Update produk
+      // UPDATE ke Supabase
       const { error } = await supabase
         .from('products')
         .update({
@@ -81,14 +82,14 @@ export default function App() {
         .eq('id', editId);
 
       if (error) {
-        alert('Gagal update produk ke database: ' + error.message);
+        alert('Gagal memperbarui produk: ' + error.message);
       } else {
-        alert('Produk berhasil diperbarui di Supabase!');
+        alert('Produk berhasil diperbarui!');
         resetForm();
         await fetchProducts();
       }
     } else {
-      // Tambah produk baru
+      // INSERT baru ke Supabase
       const { error } = await supabase
         .from('products')
         .insert([{
@@ -119,7 +120,7 @@ export default function App() {
     setProductImage('');
   };
 
-  // Edit & Hapus Produk
+  // 3. EDIT & HAPUS PRODUK DARI SUPABASE (CRUD - Delete)
   const handleEditClick = (product) => {
     setIsEditing(true);
     setEditId(product.id);
@@ -141,12 +142,13 @@ export default function App() {
       if (error) {
         alert('Gagal menghapus produk: ' + error.message);
       } else {
+        alert('Produk berhasil dihapus dari Supabase!');
         await fetchProducts();
       }
     }
   };
 
-  // Logika Keranjang & Transaksi
+  // 4. KERANJANG BELANJA & TRANSAKSI
   const addToCart = (product) => {
     if (product.stock <= 0) {
       alert('Stok produk habis!');
@@ -189,6 +191,7 @@ export default function App() {
 
   const cartTotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
+  // Potong stok di Supabase saat checkout & siapkan nota cetak
   const handleCheckout = async () => {
     if (cart.length === 0) return;
 
@@ -222,6 +225,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 font-sans">
+      {/* Header Application */}
       <header className="bg-slate-900 text-white sticky top-0 z-30 shadow-md">
         <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
           <div className="flex items-center gap-3">
@@ -271,10 +275,13 @@ export default function App() {
         </div>
       </header>
 
+      {/* Main Content Area */}
       <main className="max-w-7xl mx-auto p-4 sm:p-6">
+        {/* TAB 1: KASIR (POS) */}
         {activeTab === 'pos' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-4">
+              {/* Search & Filter */}
               <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
                 <div className="relative">
                   <Search className="absolute left-3 top-3 w-5 h-5 text-slate-400" />
@@ -304,13 +311,14 @@ export default function App() {
                 </div>
               </div>
 
+              {/* Grid Produk */}
               {loading ? (
                 <div className="flex justify-center items-center py-20 text-slate-500 gap-2">
-                  <RefreshCw className="w-6 h-6 animate-spin" /> Memuat data dari Supabase...
+                  <RefreshCw className="w-6 h-6 animate-spin text-red-600" /> Memuat data dari Supabase...
                 </div>
               ) : filteredProducts.length === 0 ? (
                 <div className="bg-white p-12 rounded-2xl text-center border border-slate-200 text-slate-400">
-                  Tidak ada produk ditemukan di database.
+                  Tidak ada produk ditemukan di Supabase.
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -345,6 +353,7 @@ export default function App() {
               )}
             </div>
 
+            {/* Keranjang Belanja */}
             <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm h-fit flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-center pb-3 mb-3 border-b border-slate-100">
@@ -459,6 +468,7 @@ export default function App() {
           </div>
         )}
 
+        {/* TAB 2: KELOLA & TAMBAH PRODUK */}
         {activeTab === 'add-product' && (
           <div className="max-w-2xl mx-auto bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
             <div className="flex justify-between items-center border-b border-slate-100 pb-4">
@@ -468,7 +478,7 @@ export default function App() {
                   {isEditing ? 'Edit Produk Warung' : 'Tambah Produk Baru ke Supabase'}
                 </h2>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Input detail barang di bawah ini untuk tersimpan langsung ke cloud database.
+                  Input detail barang di bawah ini untuk tersimpan otomatis ke cloud database.
                 </p>
               </div>
               {isEditing && (
@@ -583,15 +593,15 @@ export default function App() {
                         <td className="p-2 text-right space-x-2">
                           <button
                             onClick={() => handleEditClick(p)}
-                            className="text-blue-600 hover:text-blue-800"
+                            className="text-blue-600 hover:text-blue-800 font-semibold"
                           >
-                            <Edit3 className="w-4 h-4 inline" />
+                            <Edit3 className="w-4 h-4 inline" /> Edit
                           </button>
                           <button
                             onClick={() => handleDeleteProduct(p.id)}
-                            className="text-red-600 hover:text-red-800"
+                            className="text-red-600 hover:text-red-800 font-semibold"
                           >
-                            <Trash2 className="w-4 h-4 inline" />
+                            <Trash2 className="w-4 h-4 inline" /> Hapus
                           </button>
                         </td>
                       </tr>
@@ -603,6 +613,7 @@ export default function App() {
           </div>
         )}
 
+        {/* TAB 3: KITCHEN */}
         {activeTab === 'kitchen' && (
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-center py-16">
             <ChefHat className="w-12 h-12 text-slate-300 mx-auto mb-3" />
@@ -613,6 +624,7 @@ export default function App() {
           </div>
         )}
 
+        {/* TAB 4: DASHBOARD */}
         {activeTab === 'dashboard' && (
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
             <h2 className="font-bold text-lg text-slate-800">Ringkasan Ringkas Warung</h2>
@@ -638,6 +650,7 @@ export default function App() {
         )}
       </main>
 
+      {/* MODAL CETAK STRUK PEMBAYARAN */}
       {completedOrder && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 space-y-4">
