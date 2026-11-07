@@ -1,87 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ChefHat, LayoutDashboard, ShoppingCart, 
   Plus, Minus, Search, ArrowRight, Printer, PackagePlus, 
-  Edit3, Trash2, Camera, Image as ImageIcon
+  Edit3, Trash2, Camera, Image as ImageIcon, RefreshCw
 } from 'lucide-react';
+import { supabase } from './supabase';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('pos'); // 'pos', 'manage', 'kitchen', 'admin'
-  
-  // SEMUA PRODUK DIKEMBALIKAN LENGKAP + FITUR EDIT/FOTO KAMERA
-  const [menuItems, setMenuItems] = useState([
-    // 1. ROKOK
-    { id: 101, name: '76 Apel Royal', category: 'Rokok', price: 18000, stock: 50, image: 'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?w=500&q=80' },
-    { id: 102, name: 'Dji Sam Soe (234 / Sam Soe Refil)', category: 'Rokok', price: 23000, stock: 40, image: 'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?w=500&q=80' },
-    { id: 103, name: 'Gudang Garam International / Surya (12 & 16)', category: 'Rokok', price: 28000, stock: 60, image: 'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?w=500&q=80' },
-    { id: 104, name: 'Gudang Garam Merah', category: 'Rokok', price: 16000, stock: 35, image: 'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?w=500&q=80' },
-    { id: 105, name: 'Magnum Filter (234 Magnum & Kretek)', category: 'Rokok', price: 24000, stock: 45, image: 'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?w=500&q=80' },
-    { id: 106, name: 'Rokok Menara', category: 'Rokok', price: 14000, stock: 30, image: 'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?w=500&q=80' },
-
-    // 2. KEBUTUHAN SEHARI-HARI
-    { id: 201, name: 'Amplop', category: 'Kebutuhan Sehari-hari', price: 5000, stock: 100, image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=500&q=80' },
-    { id: 202, name: 'Antangin JRG Sachet', category: 'Kebutuhan Sehari-hari', price: 4000, stock: 80, image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&q=80' },
-    { id: 203, name: 'Attack Jaz1 Detergen', category: 'Kebutuhan Sehari-hari', price: 5000, stock: 50, image: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?w=500&q=80' },
-    { id: 204, name: 'Baby Happy! Body Fit Pants', category: 'Kebutuhan Sehari-hari', price: 48000, stock: 20, image: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?w=500&q=80' },
-    { id: 205, name: 'Bebelove / Bebelac Susu', category: 'Kebutuhan Sehari-hari', price: 65000, stock: 15, image: 'https://images.unsplash.com/photo-1527153857715-3908f2bae5e8?w=500&q=80' },
-    { id: 206, name: 'Daia Detergen', category: 'Kebutuhan Sehari-hari', price: 5000, stock: 60, image: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?w=500&q=80' },
-    { id: 207, name: 'Giv Sabun Mandi', category: 'Kebutuhan Sehari-hari', price: 4000, stock: 70, image: 'https://images.unsplash.com/photo-1607006482602-76ca0fd2f47b?w=500&q=80' },
-    { id: 208, name: 'Hansaplast Plester', category: 'Kebutuhan Sehari-hari', price: 2000, stock: 100, image: 'https://images.unsplash.com/photo-1603398938378-e54eab446dde?w=500&q=80' },
-    { id: 209, name: 'Kecap Bango Pouch/Botol', category: 'Kebutuhan Sehari-hari', price: 11000, stock: 40, image: 'https://images.unsplash.com/photo-1614531341773-3bff8b7ce3ba?w=500&q=80' },
-    { id: 210, name: 'Kispray / Rapika Pelicin Pakaian', category: 'Kebutuhan Sehari-hari', price: 2000, stock: 90, image: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?w=500&q=80' },
-    { id: 211, name: 'Komix OBH Sachet', category: 'Kebutuhan Sehari-hari', price: 3000, stock: 100, image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&q=80' },
-    { id: 212, name: 'KukuBima Ener-G!', category: 'Kebutuhan Sehari-hari', price: 2000, stock: 120, image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&q=80' },
-    { id: 213, name: 'Laurier / Softex Pembalut', category: 'Kebutuhan Sehari-hari', price: 7000, stock: 45, image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&q=80' },
-    { id: 214, name: 'Lifebuoy Sabun Batang', category: 'Kebutuhan Sehari-hari', price: 4500, stock: 80, image: 'https://images.unsplash.com/photo-1607006482602-76ca0fd2f47b?w=500&q=80' },
-    { id: 215, name: 'MamyPoko Popok Bayi', category: 'Kebutuhan Sehari-hari', price: 55000, stock: 25, image: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?w=500&q=80' },
-    { id: 216, name: 'Mancis / Korek Api Gas', category: 'Kebutuhan Sehari-hari', price: 3000, stock: 150, image: 'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?w=500&q=80' },
-    { id: 217, name: 'Minyak Kayu Putih Botol', category: 'Kebutuhan Sehari-hari', price: 15000, stock: 35, image: 'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=500&q=80' },
-    { id: 218, name: 'Pepsodent Pasta Gigi', category: 'Kebutuhan Sehari-hari', price: 8000, stock: 60, image: 'https://images.unsplash.com/photo-1559598467-f8b76c8155d0?w=500&q=80' },
-    { id: 219, name: 'Proclin Pemutih Pakaian', category: 'Kebutuhan Sehari-hari', price: 4000, stock: 40, image: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?w=500&q=80' },
-    { id: 220, name: 'Shampo Sachet (Rejoice/Dove/Lifebuoy)', category: 'Kebutuhan Sehari-hari', price: 1000, stock: 200, image: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=500&q=80' },
-    { id: 221, name: 'Rexona Deodorant Sachet', category: 'Kebutuhan Sehari-hari', price: 2500, stock: 90, image: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=500&q=80' },
-    { id: 222, name: 'Rinso Anti Noda', category: 'Kebutuhan Sehari-hari', price: 5000, stock: 75, image: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?w=500&q=80' },
-    { id: 223, name: 'Sabun Cream Telepon Batang', category: 'Kebutuhan Sehari-hari', price: 3500, stock: 50, image: 'https://images.unsplash.com/photo-1607006482602-76ca0fd2f47b?w=500&q=80' },
-    { id: 224, name: 'Shinzu\'i Sabun Mandi', category: 'Kebutuhan Sehari-hari', price: 5000, stock: 65, image: 'https://images.unsplash.com/photo-1607006482602-76ca0fd2f47b?w=500&q=80' },
-    { id: 225, name: 'Sikat Gigi Dewasa / Anak', category: 'Kebutuhan Sehari-hari', price: 4000, stock: 80, image: 'https://images.unsplash.com/photo-1559598467-f8b76c8155d0?w=500&q=80' },
-    { id: 226, name: 'So Klin Detergen', category: 'Kebutuhan Sehari-hari', price: 5000, stock: 90, image: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?w=500&q=80' },
-    { id: 227, name: 'Sunlight Sabun Cuci Piring', category: 'Kebutuhan Sehari-hari', price: 3000, stock: 110, image: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?w=500&q=80' },
-
-    // 3. MINUMAN
-    { id: 301, name: 'Aqua (600ml & 1.5L)', category: 'Minuman', price: 4000, stock: 150, image: 'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=500&q=80' },
-    { id: 302, name: 'Coffeemix / Indocafe Coffeemix', category: 'Minuman', price: 2000, stock: 200, image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&q=80' },
-    { id: 303, name: 'Energen Sachet', category: 'Minuman', price: 2500, stock: 100, image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=500&q=80' },
-    { id: 304, name: 'Frisian Flag Energo Susu', category: 'Minuman', price: 2000, stock: 90, image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=500&q=80' },
-    { id: 305, name: 'Good Day Cappuccino', category: 'Minuman', price: 2500, stock: 150, image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=500&q=80' },
-    { id: 306, name: 'Gula Aren Cappuccino', category: 'Minuman', price: 3000, stock: 80, image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=500&q=80' },
-    { id: 307, name: 'Indocafe Cappuccino', category: 'Minuman', price: 2500, stock: 110, image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&q=80' },
-    { id: 308, name: 'Kapal Api Special Mix', category: 'Minuman', price: 2000, stock: 180, image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&q=80' },
-    { id: 309, name: 'MaxTea Tarikk', category: 'Minuman', price: 3000, stock: 75, image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=500&q=80' },
-    { id: 310, name: 'Milo Cokelat Sachet', category: 'Minuman', price: 3000, stock: 100, image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=500&q=80' },
-    { id: 311, name: 'Teh Celup SariWangi / SariMurni', category: 'Minuman', price: 6000, stock: 60, image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=500&q=80' },
-    { id: 312, name: 'Sukrim Susu Krim', category: 'Minuman', price: 2000, stock: 85, image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=500&q=80' },
-    { id: 313, name: 'Susu Putih Kental Manis', category: 'Minuman', price: 2000, stock: 140, image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=500&q=80' },
-    { id: 314, name: 'Teh Pucuk Harum Botol', category: 'Minuman', price: 3500, stock: 120, image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=500&q=80' },
-    { id: 315, name: 'TOP Cappuccino', category: 'Minuman', price: 2500, stock: 95, image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=500&q=80' },
-
-    // 4. MAKANAN
-    { id: 401, name: 'Beras 1 kg & Sembako (Minyakita/Gula/Garam)', category: 'Makanan', price: 15000, stock: 40, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500&q=80' },
-    { id: 402, name: 'Desaku Bumbu (Kunyit/Ketumbar)', category: 'Makanan', price: 1500, stock: 150, image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=500&q=80' },
-    { id: 403, name: 'Garuda Pilus / Kacang Atom', category: 'Makanan', price: 2000, stock: 100, image: 'https://images.unsplash.com/photo-1621939514649-280e2ee25f60?w=500&q=80' },
-    { id: 404, name: 'Indomie (Kari Ayam & Mie Goreng)', category: 'Makanan', price: 3500, stock: 300, image: 'https://images.unsplash.com/photo-1612927601601-6638404737ce?w=500&q=80' },
-    { id: 405, name: 'Khong Guan Sandwich Combo', category: 'Makanan', price: 12000, stock: 30, image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=500&q=80' },
-    { id: 406, name: 'Ladaku Merica Bubuk', category: 'Makanan', price: 1000, stock: 200, image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=500&q=80' },
-    { id: 407, name: 'Mie Sedaap Instant', category: 'Makanan', price: 3500, stock: 250, image: 'https://images.unsplash.com/photo-1612927601601-6638404737ce?w=500&q=80' },
-    { id: 408, name: 'Migelas Seduh', category: 'Makanan', price: 1500, stock: 120, image: 'https://images.unsplash.com/photo-1612927601601-6638404737ce?w=500&q=80' },
-    { id: 409, name: 'Pop Mie Cup', category: 'Makanan', price: 6500, stock: 80, image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=500&q=80' },
-    { id: 410, name: 'Roma Malkist Cokelat', category: 'Makanan', price: 8000, stock: 50, image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=500&q=80' },
-    { id: 411, name: 'Royco Sachet (Ayam & Sapi)', category: 'Makanan', price: 1000, stock: 250, image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=500&q=80' },
-    { id: 412, name: 'Sajiku Nasi Goreng & Tepung', category: 'Makanan', price: 3000, stock: 110, image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=500&q=80' },
-    { id: 413, name: 'Superco Biskuit Pack', category: 'Makanan', price: 7000, stock: 40, image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=500&q=80' },
-    { id: 414, name: 'Supermi Instant', category: 'Makanan', price: 3000, stock: 90, image: 'https://images.unsplash.com/photo-1612927601601-6638404737ce?w=500&q=80' },
-    { id: 415, name: 'Telur Ayam Ras (Per Butir)', category: 'Makanan', price: 2000, stock: 150, image: 'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=500&q=80' },
-    { id: 416, name: 'Tic Tac Snack', category: 'Makanan', price: 2000, stock: 100, image: 'https://images.unsplash.com/photo-1621939514649-280e2ee25f60?w=500&q=80' },
-  ]);
+  const [activeTab, setActiveTab] = useState('pos');
+  const [menuItems, setMenuItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [cart, setCart] = useState([]);
   const [customerName, setCustomerName] = useState('');
@@ -89,7 +17,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Semua');
 
-  // State Form Tambah/Edit Produk
+  // Form State Edit/Tambah
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
   const [productName, setProductName] = useState('');
@@ -98,20 +26,42 @@ export default function App() {
   const [productStock, setProductStock] = useState('');
   const [productImage, setProductImage] = useState('');
 
-  // Transaksi Dapur & Admin
-  const [orders, setOrders] = useState([
-    {
-      id: 'ORD-001',
-      customer: 'Pak Ahmad',
-      type: 'Takeaway',
-      items: [{ name: 'Indomie (Kari Ayam & Mie Goreng)', qty: 3, price: 3500 }],
-      total: 10500,
-      status: 'Menunggu Dimasak',
-      time: '19:10'
-    }
-  ]);
-
+  const [orders, setOrders] = useState([]);
   const [completedOrder, setCompletedOrder] = useState(null);
+
+  // 1. AMBIL DATA DARI SUPABASE (FETCH & REALTIME)
+  useEffect(() => {
+    fetchProducts();
+
+    // Berlangganan perubahan data Realtime
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'products' },
+        () => {
+          fetchProducts();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const fetchProducts = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('id', { ascending: false });
+
+    if (!error && data) {
+      setMenuItems(data);
+    }
+    setLoading(false);
+  };
 
   // Filter Produk
   const filteredMenu = menuItems.filter(item => {
@@ -143,9 +93,19 @@ export default function App() {
 
   const totalCartPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
-  const handleCheckout = () => {
+  // PROSES TRANSAKSI & KURANGI STOK DI SUPABASE
+  const handleCheckout = async () => {
     if (cart.length === 0) return alert('Keranjang masih kosong!');
     if (!customerName.trim()) return alert('Masukkan Nama Pembeli terlebih dahulu!');
+
+    // Update stok produk di Supabase
+    for (const item of cart) {
+      const newStock = Math.max(0, item.stock - item.qty);
+      await supabase
+        .from('products')
+        .update({ stock: newStock })
+        .eq('id', item.id);
+    }
 
     const newOrder = {
       id: `ORD-${Math.floor(100 + Math.random() * 900)}`,
@@ -161,9 +121,9 @@ export default function App() {
     setCompletedOrder(newOrder);
     setCart([]);
     setCustomerName('');
+    fetchProducts();
   };
 
-  // Fungsi Handle Upload Foto / Ambil dari Kamera HP
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -175,8 +135,8 @@ export default function App() {
     }
   };
 
-  // Simpan Produk (Tambah atau Edit)
-  const handleSaveProduct = (e) => {
+  // SIMPAN PRODUK KE SUPABASE (TAMBAH / EDIT)
+  const handleSaveProduct = async (e) => {
     e.preventDefault();
     if (!productName || !productPrice || !productStock) {
       alert('Nama, Harga, dan Stok wajib diisi!');
@@ -186,34 +146,41 @@ export default function App() {
     const finalImage = productImage || 'https://images.unsplash.com/photo-1583258292688-d0213dc5a3a8?w=500&q=80';
 
     if (isEditing) {
-      setMenuItems(menuItems.map(item => item.id === editId ? {
-        ...item,
-        name: productName,
-        category: productCategory,
-        price: Number(productPrice),
-        stock: Number(productStock),
-        image: finalImage
-      } : item));
-      setIsEditing(false);
-      setEditId(null);
-      alert('Produk berhasil diperbarui!');
+      const { error } = await supabase
+        .from('products')
+        .update({
+          name: productName,
+          category: productCategory,
+          price: Number(productPrice),
+          stock: Number(productStock),
+          image: finalImage
+        })
+        .eq('id', editId);
+
+      if (error) alert('Gagal memperbarui produk!');
+      else alert('Produk berhasil diperbarui di Cloud Supabase!');
     } else {
-      const newItem = {
-        id: Date.now(),
-        name: productName,
-        category: productCategory,
-        price: Number(productPrice),
-        stock: Number(productStock),
-        image: finalImage
-      };
-      setMenuItems([newItem, ...menuItems]);
-      alert('Produk baru berhasil ditambahkan!');
+      const { error } = await supabase
+        .from('products')
+        .insert([{
+          name: productName,
+          category: productCategory,
+          price: Number(productPrice),
+          stock: Number(productStock),
+          image: finalImage
+        }]);
+
+      if (error) alert('Gagal menambahkan produk!');
+      else alert('Produk baru berhasil disimpan ke Cloud Supabase!');
     }
 
+    setIsEditing(false);
+    setEditId(null);
     setProductName('');
     setProductPrice('');
     setProductStock('');
     setProductImage('');
+    fetchProducts();
     setActiveTab('pos');
   };
 
@@ -228,9 +195,12 @@ export default function App() {
     setActiveTab('manage');
   };
 
-  const handleDeleteProduct = (id) => {
-    if (confirm('Yakin ingin menghapus produk ini dari daftar kasir?')) {
-      setMenuItems(menuItems.filter(item => item.id !== id));
+  // HAPUS PRODUK DARI SUPABASE
+  const handleDeleteProduct = async (id) => {
+    if (confirm('Yakin ingin menghapus produk ini dari database Cloud?')) {
+      const { error } = await supabase.from('products').delete().eq('id', id);
+      if (error) alert('Gagal menghapus produk');
+      else fetchProducts();
     }
   };
 
@@ -240,13 +210,15 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col font-sans text-slate-800">
-      {/* NAVBAR HEADER */}
       <header className="bg-slate-900 text-white shadow-xl sticky top-0 z-50 flex justify-between items-center px-6 py-3.5 border-b border-slate-800">
         <div className="flex items-center space-x-3">
           <div className="bg-red-600 text-white p-2.5 rounded-2xl font-black text-lg shadow flex items-center justify-center">🏪</div>
           <div>
             <h1 className="font-black text-base tracking-wider uppercase text-red-500">Warung Amyponsel</h1>
-            <p className="text-[11px] text-slate-400">Sistem POS Kasir & Stok Modern</p>
+            <p className="text-[11px] text-emerald-400 font-bold flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              Terhubung ke Supabase Cloud
+            </p>
           </div>
         </div>
         
@@ -290,14 +262,9 @@ export default function App() {
         </nav>
       </header>
 
-      {/* MAIN CONTENT AREA */}
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
-        
-        {/* --- TAB 1: KASIR (POS) --- */}
         {activeTab === 'pos' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            {/* KATALOG PRODUK */}
             <div className="lg:col-span-2 flex flex-col space-y-4">
               <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3">
                 <div className="relative w-full sm:w-72">
@@ -324,68 +291,79 @@ export default function App() {
                 </div>
               </div>
 
-              {/* GRID KARTU PRODUK */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {filteredMenu.map(item => (
-                  <div 
-                    key={item.id}
-                    className="bg-white border border-slate-200 hover:border-red-500 hover:shadow-xl rounded-2xl overflow-hidden transition group flex flex-col justify-between"
-                  >
-                    <div className="relative h-32 w-full bg-slate-100 overflow-hidden cursor-pointer" onClick={() => addToCart(item)}>
-                      <img 
-                        src={item.image} 
-                        alt={item.name} 
-                        className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
-                      />
-                      <div className="absolute top-2 right-2 text-[10px] font-black bg-slate-900/80 text-white px-2 py-0.5 rounded-lg backdrop-blur-sm">
-                        Stok: {item.stock}
+              {loading ? (
+                <div className="p-12 text-center text-slate-400 font-bold flex flex-col items-center gap-2">
+                  <RefreshCw className="animate-spin text-red-600" size={24} />
+                  <span>Memuat data dari Supabase Cloud...</span>
+                </div>
+              ) : filteredMenu.length === 0 ? (
+                <div className="p-12 text-center text-slate-400 bg-white rounded-2xl border border-dashed border-slate-200">
+                  <p className="text-xs font-bold">Belum ada produk di database.</p>
+                  <button onClick={() => setActiveTab('manage')} className="mt-2 text-xs text-red-600 font-extrabold underline">
+                    + Tambah Produk Sekarang
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {filteredMenu.map(item => (
+                    <div 
+                      key={item.id}
+                      className="bg-white border border-slate-200 hover:border-red-500 hover:shadow-xl rounded-2xl overflow-hidden transition group flex flex-col justify-between"
+                    >
+                      <div className="relative h-32 w-full bg-slate-100 overflow-hidden cursor-pointer" onClick={() => addToCart(item)}>
+                        <img 
+                          src={item.image} 
+                          alt={item.name} 
+                          className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
+                        />
+                        <div className="absolute top-2 right-2 text-[10px] font-black bg-slate-900/80 text-white px-2 py-0.5 rounded-lg backdrop-blur-sm">
+                          Stok: {item.stock}
+                        </div>
+                        <div className="absolute top-2 left-2 text-[9px] font-bold bg-red-600 text-white px-2 py-0.5 rounded-lg uppercase tracking-wider shadow">
+                          {item.category}
+                        </div>
                       </div>
-                      <div className="absolute top-2 left-2 text-[9px] font-bold bg-red-600 text-white px-2 py-0.5 rounded-lg uppercase tracking-wider shadow">
-                        {item.category}
-                      </div>
-                    </div>
 
-                    <div className="p-3.5 flex flex-col justify-between flex-1 bg-white">
-                      <div className="cursor-pointer" onClick={() => addToCart(item)}>
-                        <h3 className="font-bold text-slate-800 text-xs line-clamp-2 mb-2 leading-snug">{item.name}</h3>
-                      </div>
-                      
-                      <div className="space-y-2 pt-2 border-t border-slate-100">
-                        <div className="flex justify-between items-center">
-                          <span className="font-black text-red-600 text-sm">Rp {item.price.toLocaleString()}</span>
-                          <button 
-                            onClick={() => addToCart(item)}
-                            className="bg-red-50 text-red-600 p-2 rounded-xl hover:bg-red-600 hover:text-white transition shadow-sm"
-                          >
-                            <Plus size={14} />
-                          </button>
+                      <div className="p-3.5 flex flex-col justify-between flex-1 bg-white">
+                        <div className="cursor-pointer" onClick={() => addToCart(item)}>
+                          <h3 className="font-bold text-slate-800 text-xs line-clamp-2 mb-2 leading-snug">{item.name}</h3>
                         </div>
                         
-                        <div className="flex space-x-1 pt-1 border-t border-dashed border-slate-100">
-                          <button 
-                            onClick={() => handleStartEdit(item)}
-                            className="flex-1 bg-slate-100 hover:bg-blue-50 text-slate-600 hover:text-blue-600 py-1 rounded-lg text-[10px] font-bold flex items-center justify-center space-x-1 transition"
-                          >
-                            <Edit3 size={11} />
-                            <span>Edit</span>
-                          </button>
-                          <button 
-                            onClick={() => handleDeleteProduct(item.id)}
-                            className="flex-1 bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 py-1 rounded-lg text-[10px] font-bold flex items-center justify-center space-x-1 transition"
-                          >
-                            <Trash2 size={11} />
-                            <span>Hapus</span>
-                          </button>
+                        <div className="space-y-2 pt-2 border-t border-slate-100">
+                          <div className="flex justify-between items-center">
+                            <span className="font-black text-red-600 text-sm">Rp {Number(item.price).toLocaleString()}</span>
+                            <button 
+                              onClick={() => addToCart(item)}
+                              className="bg-red-50 text-red-600 p-2 rounded-xl hover:bg-red-600 hover:text-white transition shadow-sm"
+                            >
+                              <Plus size={14} />
+                            </button>
+                          </div>
+                          
+                          <div className="flex space-x-1 pt-1 border-t border-dashed border-slate-100">
+                            <button 
+                              onClick={() => handleStartEdit(item)}
+                              className="flex-1 bg-slate-100 hover:bg-blue-50 text-slate-600 hover:text-blue-600 py-1 rounded-lg text-[10px] font-bold flex items-center justify-center space-x-1 transition"
+                            >
+                              <Edit3 size={11} />
+                              <span>Edit</span>
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteProduct(item.id)}
+                              className="flex-1 bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 py-1 rounded-lg text-[10px] font-bold flex items-center justify-center space-x-1 transition"
+                            >
+                              <Trash2 size={11} />
+                              <span>Hapus</span>
+                            </button>
+                          </div>
                         </div>
                       </div>
-
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* KERANJANG BELANJA */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col h-[calc(100vh-130px)] sticky top-20 overflow-hidden">
               <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                 <h2 className="font-bold text-slate-800 text-xs flex items-center space-x-2 uppercase tracking-wider">
@@ -463,20 +441,19 @@ export default function App() {
                 </button>
               </div>
             </div>
-
           </div>
         )}
 
-        {/* --- TAB 2: KELOLA, TAMBAH, & EDIT PRODUK DENGAN KAMERA/FOTO --- */}
+        {/* TAB KELOLA PRODUK */}
         {activeTab === 'manage' && (
           <div className="max-w-2xl mx-auto bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-6">
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="font-black text-lg text-slate-900 flex items-center space-x-2">
                   <PackagePlus className="text-red-600" />
-                  <span>{isEditing ? 'Edit Produk Warung' : 'Tambah Produk Baru'}</span>
+                  <span>{isEditing ? 'Edit Produk Cloud' : 'Tambah Produk ke Cloud'}</span>
                 </h2>
-                <p className="text-xs text-slate-500">Ambil foto produk langsung dari kamera HP atau unggah dari galeri.</p>
+                <p className="text-xs text-slate-500">Produk yang dibuat otomatis sinkron ke HP dan Laptop.</p>
               </div>
               {isEditing && (
                 <button 
@@ -493,7 +470,7 @@ export default function App() {
                 <label className="text-xs font-bold text-slate-700 block mb-1">Nama Produk / Barang</label>
                 <input 
                   type="text" 
-                  placeholder="Contoh: Rokok Sampoerna Mild / Sabun Cuci" 
+                  placeholder="Contoh: Rokok Sampoerna Mild" 
                   value={productName}
                   onChange={(e) => setProductName(e.target.value)}
                   className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -525,7 +502,7 @@ export default function App() {
                       />
                     </label>
 
-                    <div className="text-center text-[10px] text-slate-400 font-bold">ATAU MASUKKAN LINK URL GAMBAR</div>
+                    <div className="text-center text-[10px] text-slate-400 font-bold">ATAU LINK URL GAMBAR</div>
 
                     <input 
                       type="url" 
@@ -580,13 +557,13 @@ export default function App() {
                 type="submit"
                 className="w-full bg-red-600 hover:bg-red-700 text-white font-black py-3 rounded-xl transition shadow text-xs uppercase tracking-wider mt-2"
               >
-                {isEditing ? 'Simpan Perubahan Produk' : 'Simpan & Tambahkan ke Kasir'}
+                {isEditing ? 'Simpan Perubahan ke Supabase' : 'Simpan produk baru ke Supabase'}
               </button>
             </form>
           </div>
         )}
 
-        {/* --- TAB 3: KITCHEN DISPLAY SYSTEM --- */}
+        {/* TAB KITCHEN */}
         {activeTab === 'kitchen' && (
           <div className="space-y-4">
             <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
@@ -668,7 +645,7 @@ export default function App() {
           </div>
         )}
 
-        {/* --- TAB 4: ADMIN DASHBOARD --- */}
+        {/* TAB ADMIN */}
         {activeTab === 'admin' && (
           <div className="space-y-6">
             <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
@@ -701,47 +678,8 @@ export default function App() {
                 </div>
               </div>
             </div>
-
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="p-4 border-b border-slate-100 bg-slate-50 font-bold text-slate-800 text-xs uppercase tracking-wider">
-                Riwayat Transaksi Pelanggan
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-100 text-slate-600 uppercase text-[10px]">
-                    <tr>
-                      <th className="p-3">ID Order</th>
-                      <th className="p-3">Pembeli</th>
-                      <th className="p-3">Tipe</th>
-                      <th className="p-3">Total Belanja</th>
-                      <th className="p-3">Status</th>
-                      <th className="p-3">Waktu</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-medium">
-                    {orders.map(o => (
-                      <tr key={o.id} className="hover:bg-slate-50">
-                        <td className="p-3 font-bold text-red-600">{o.id}</td>
-                        <td className="p-3 font-bold text-slate-900">{o.customer}</td>
-                        <td className="p-3"><span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md text-[10px] font-bold">{o.type}</span></td>
-                        <td className="p-3 font-black text-slate-900">Rp {o.total.toLocaleString()}</td>
-                        <td className="p-3">
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                            o.status === 'Selesai' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
-                          }`}>
-                            {o.status}
-                          </span>
-                        </td>
-                        <td className="p-3 text-slate-500">{o.time}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
           </div>
         )}
-
       </main>
 
       {/* STRUK MODAL */}
