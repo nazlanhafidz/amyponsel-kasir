@@ -25,7 +25,6 @@ export default function App() {
   const [completedOrder, setCompletedOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Form State untuk Tambah / Edit Produk
   const [productName, setProductName] = useState('');
   const [productCategory, setProductCategory] = useState('Makanan');
   const [productPrice, setProductPrice] = useState('');
@@ -49,7 +48,6 @@ export default function App() {
 
     if (error) {
       console.error('Error fetching products:', error.message);
-      alert('Gagal mengambil data dari Supabase: ' + error.message);
     } else {
       setProducts(data || []);
     }
@@ -136,7 +134,6 @@ export default function App() {
       if (error) {
         alert('Gagal menghapus produk: ' + error.message);
       } else {
-        alert('Produk berhasil dihapus dari Supabase!');
         await fetchProducts();
       }
     }
@@ -217,7 +214,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans">
-      {/* Header Application - Tema Oranye Shopee */}
       <header className="bg-gradient-to-r from-orange-600 to-amber-600 text-white sticky top-0 z-30 shadow-md">
         <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
           <div className="flex items-center gap-3">
@@ -267,9 +263,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main Content Area */}
       <main className="max-w-7xl mx-auto p-4 sm:p-6">
-        {/* TAB 1: KASIR (POS) */}
         {activeTab === 'pos' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-4">
@@ -304,11 +298,11 @@ export default function App() {
 
               {loading ? (
                 <div className="flex justify-center items-center py-20 text-slate-500 gap-2">
-                  <RefreshCw className="w-6 h-6 animate-spin text-orange-600" /> Memuat data dari Supabase...
+                  <RefreshCw className="w-6 h-6 animate-spin text-orange-600" /> Memuat data...
                 </div>
               ) : filteredProducts.length === 0 ? (
                 <div className="bg-white p-12 rounded-2xl text-center border border-slate-200 text-slate-400">
-                  Tidak ada produk ditemukan di Supabase.
+                  Tidak ada produk ditemukan.
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -343,7 +337,6 @@ export default function App() {
               )}
             </div>
 
-            {/* Keranjang Belanja */}
             <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm h-fit flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-center pb-3 mb-3 border-b border-slate-100">
@@ -458,7 +451,6 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 2: KELOLA & TAMBAH PRODUK */}
         {activeTab === 'add-product' && (
           <div className="max-w-2xl mx-auto bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
             <div className="flex justify-between items-center border-b border-slate-100 pb-4">
@@ -467,9 +459,6 @@ export default function App() {
                   <Plus className="w-5 h-5 text-orange-600" />
                   {isEditing ? 'Edit Produk Warung' : 'Tambah Produk Baru ke Supabase'}
                 </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Input detail barang di bawah ini untuk tersimpan otomatis ke cloud database.
-                </p>
               </div>
               {isEditing && (
                 <button
@@ -486,7 +475,7 @@ export default function App() {
                 <label className="text-xs font-bold text-slate-600 uppercase">Nama Produk / Barang</label>
                 <input
                   type="text"
-                  placeholder="Contoh: Aqua 600ml / Rokok Sampoerna"
+                  placeholder="Contoh: Aqua 600ml"
                   value={productName}
                   onChange={(e) => setProductName(e.target.value)}
                   className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -603,7 +592,6 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 3: KITCHEN */}
         {activeTab === 'kitchen' && (
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-center py-16">
             <ChefHat className="w-12 h-12 text-slate-300 mx-auto mb-3" />
@@ -614,7 +602,6 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB 4: DASHBOARD */}
         {activeTab === 'dashboard' && (
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
             <h2 className="font-bold text-lg text-slate-800">Ringkasan Ringkas Warung</h2>
@@ -640,7 +627,6 @@ export default function App() {
         )}
       </main>
 
-      {/* MODAL CETAK STRUK PEMBAYARAN */}
       {completedOrder && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 space-y-4">
