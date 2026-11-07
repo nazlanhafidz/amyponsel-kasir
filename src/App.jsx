@@ -157,8 +157,12 @@ export default function App() {
         })
         .eq('id', editId);
 
-      if (error) alert('Gagal memperbarui produk!');
-      else alert('Produk berhasil diperbarui di Cloud Supabase!');
+      if (error) {
+        console.error('Error Supabase:', error);
+        alert('Gagal memperbarui produk: ' + error.message);
+      } else {
+        alert('Produk berhasil diperbarui di Cloud Supabase!');
+      }
     } else {
       const { error } = await supabase
         .from('products')
@@ -170,8 +174,12 @@ export default function App() {
           image: finalImage
         }]);
 
-      if (error) alert('Gagal menambahkan produk!');
-      else alert('Produk baru berhasil disimpan ke Cloud Supabase!');
+      if (error) {
+        console.error('Error Supabase:', error);
+        alert('Gagal menambahkan produk: ' + error.message);
+      } else {
+        alert('Produk baru berhasil disimpan ke Cloud Supabase!');
+      }
     }
 
     setIsEditing(false);
@@ -182,17 +190,6 @@ export default function App() {
     setProductImage('');
     fetchProducts();
     setActiveTab('pos');
-  };
-
-  const handleStartEdit = (item) => {
-    setIsEditing(true);
-    setEditId(item.id);
-    setProductName(item.name);
-    setProductCategory(item.category);
-    setProductPrice(item.price);
-    setProductStock(item.stock);
-    setProductImage(item.image);
-    setActiveTab('manage');
   };
 
   // HAPUS PRODUK DARI SUPABASE
