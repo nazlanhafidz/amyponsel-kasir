@@ -1,1 +1,4 @@
-@import "tailwindcss";
+/* Paksa seluruh aksen merah jadi oranye Shopee */
+.bg-red-600, .bg-red-500 { background-color: #ea580c !important; }
+.text-red-600, .text-red-500 { color: #ea580c !important; }
+.border-red-500 { border-color: #ea580c !important; }
